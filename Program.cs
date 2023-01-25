@@ -17,10 +17,10 @@ builder.Services.AddAuthentication()
         o.SignInScheme = "patreon-cookie";
 
         o.ClientId = "id";
-        o.ClientSecret= "secret";
+        o.ClientSecret = "secret";
         o.AuthorizationEndpoint = "https://oauth.mocklab.io/oauth/authorize";
-        o.TokenEndpoint= "https://oauth.mocklab.io/oauth/token";
-        o.UserInformationEndpoint= "https://oauth.mocklab.io/userinfo";
+        o.TokenEndpoint = "https://oauth.mocklab.io/oauth/token";
+        o.UserInformationEndpoint = "https://oauth.mocklab.io/userinfo";
         o.CallbackPath = "/cb-patreon";
 
         o.Scope.Add("profile");
@@ -31,7 +31,7 @@ builder.Services.AddAuthorization(b =>
 {
     b.AddPolicy("customer", p =>
     {
-        p.AddAuthenticationSchemes("local", "visitor")
+        p.AddAuthenticationSchemes("patreon-cookie", "local", "visitor")
         .RequireAuthenticatedUser();
     });
 
@@ -67,7 +67,7 @@ app.MapGet("/login-patreon", async (HttpContext ctx) =>
 {
     await ctx.ChallengeAsync("external-patreon", new AuthenticationProperties()
     {
-        RedirectUri ="/"
+        RedirectUri = "/"
     });
 
 }).RequireAuthorization("user");
@@ -78,7 +78,7 @@ app.Run();
 public class VisiterAutHandler : CookieAuthenticationHandler
 {
     public VisiterAutHandler(
-        IOptionsMonitor<CookieAuthenticationOptions> options, 
+        IOptionsMonitor<CookieAuthenticationOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock) : base(options, logger, encoder, clock)
